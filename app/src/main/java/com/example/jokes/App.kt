@@ -16,7 +16,8 @@ class App : Application() {
             .build()
         viewModel = ViewModel(
             Model.Base(
-                retrofit.create(JokeService::class.java),
+                RemoteDataSource.Base(retrofit.create(JokeService::class.java)),
+                LocalDataSource.Test(),
                 ResourceManager.Base(this)
             )
         )

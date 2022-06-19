@@ -1,20 +1,22 @@
 package com.example.jokes
 
+import androidx.annotation.DrawableRes
+
 class ViewModel(private val model: Model) {
 
-    private var callback: TextCallback? = null
+    private var callback: DataCallback? = null
 
-    fun init(callback: TextCallback) {
+    private val jokeCallback = object : JokeCallback {
+        override fun provide(joke: Joke) {
+            callback?.let {
+                joke.map(it)
+            }
+        }
+    }
+
+    fun init(callback: DataCallback) {
         this.callback = callback
-        model.init(object : ResultCallback {
-            override fun provideSuccess(joke: Joke) {
-                callback.provideText(joke.getJokeUi())
-            }
-
-            override fun provideError(error: JokeError) {
-                callback.provideText(error.getMessage())
-            }
-        })
+        model.init(jokeCallback)
     }
 
     fun getJoke() {
@@ -26,9 +28,19 @@ class ViewModel(private val model: Model) {
         model.clear()
     }
 
+    fun changeJokeStatus() {
+        model.changeJokeStatus(jokeCallback)
+    }
+
+    fun chooseFavorites(favorites: Boolean) {
+        model.chooseDataSource(favorites)
+    }
+
 }
 
-interface TextCallback {
+interface DataCallback {
 
     fun provideText(text: String)
+
+    fun provideIconRes(@DrawableRes id: Int)
 }

@@ -2,7 +2,7 @@ package com.example.jokes
 
 import com.google.gson.annotations.SerializedName
 
-data class JokeDTO(
+data class JokeRemoteEntity(
     @SerializedName("error")
     private val error: Boolean,
     @SerializedName("category")
@@ -37,5 +37,9 @@ data class JokeDTO(
         private val explicit: Boolean
     )
 
-    fun toJoke() = Joke(setup, delivery)
+    fun toBaseJoke() = Joke.Base(setup, delivery)
+
+    fun toFavoriteJoke() = Joke.Favorite(setup, delivery)
+
+    fun changeStatus(localDataSource: LocalDataSource) = localDataSource.addOrRemove(id, this)
 }

@@ -1,59 +1,84 @@
 package com.example.jokes
 
-import retrofit2.Call
-import retrofit2.Response
-import java.net.UnknownHostException
-
 interface Model {
 
     fun getJoke()
 
-    fun init(callback: ResultCallback)
+    fun init(callback: JokeCallback)
 
     fun clear()
 
+    fun changeJokeStatus(jokeCallback: JokeCallback)
+
+    fun chooseDataSource(favorites: Boolean)
+
     class Base(
-        private val service: JokeService,
+        private val remoteDataSource: RemoteDataSource,
+        private val localDataSource: LocalDataSource,
         private val resourceManager: ResourceManager
     ) : Model {
 
-        private var callback: ResultCallback? = null
         private val noConnection by lazy { JokeError.NoConnection(resourceManager) }
         private val serviceUnavailable by lazy { JokeError.ServiceUnavailable(resourceManager) }
+        private val noCachedJokes by lazy { JokeError.NoCachedJokes(resourceManager) }
+
+        private var jokeCallback: JokeCallback? = null
+        private var localJokeRemoteEntity: JokeRemoteEntity? = null
+
+        private var getLocalJoke = false
 
         override fun getJoke() {
-            service.getJoke().enqueue(object : retrofit2.Callback<JokeDTO> {
-                override fun onResponse(call: Call<JokeDTO>, response: Response<JokeDTO>) {
-                    if (response.isSuccessful) {
-                        callback?.provideSuccess(response.body()!!.toJoke())
-                    } else {
-                        callback?.provideError(serviceUnavailable)
+            if (getLocalJoke) {
+                localDataSource.getJoke(object : JokeLocalCallback {
+                    override fun provide(jokeRemoteEntity: JokeRemoteEntity) {
+                        localJokeRemoteEntity = jokeRemoteEntity
+                        jokeCallback?.provide(jokeRemoteEntity.toFavoriteJoke())
                     }
-                }
 
-                override fun onFailure(call: Call<JokeDTO>, t: Throwable) {
-                    if (t is UnknownHostException) {
-                        callback?.provideError(noConnection)
-                    } else {
-                        callback?.provideError(serviceUnavailable)
+                    override fun fail() {
+                        localJokeRemoteEntity = null
+                        jokeCallback?.provide(Joke.Failed(noCachedJokes.getMessage()))
                     }
-                }
-            })
+                })
+            } else {
+                remoteDataSource.getJoke(object : JokeRemoteCallback {
+                    override fun provide(jokeRemoteEntity: JokeRemoteEntity) {
+                        localJokeRemoteEntity = jokeRemoteEntity
+                        jokeCallback?.provide(jokeRemoteEntity.toBaseJoke())
+                    }
+
+                    override fun fail(errorType: ErrorType) {
+                        localJokeRemoteEntity = null
+                        val failure =
+                            if (errorType == ErrorType.SERVICE_UNAVAILABLE) serviceUnavailable else noConnection
+                        jokeCallback?.provide(Joke.Failed(failure.getMessage()))
+                    }
+                })
+            }
         }
 
-        override fun init(callback: ResultCallback) {
-            this.callback = callback
+        override fun init(callback: JokeCallback) {
+            jokeCallback = callback
+        }
+
+        override fun changeJokeStatus(jokeCallback: JokeCallback) {
+            localJokeRemoteEntity?.changeStatus(localDataSource)?.let {
+                jokeCallback.provide(it)
+            }
+        }
+
+        override fun chooseDataSource(local: Boolean) {
+            getLocalJoke = local
         }
 
         override fun clear() {
-            callback = null
+            jokeCallback = null
         }
     }
 
-
     class Test(resourceManager: ResourceManager) : Model {
 
-        private var callback: ResultCallback? = null
+        private var callback: JokeCallback? = null
         private var count = 0
         private val noConnection = JokeError.NoConnection(resourceManager)
         private val serviceUnavailable = JokeError.ServiceUnavailable(resourceManager)
@@ -62,17 +87,25 @@ interface Model {
             Thread {
                 Thread.sleep(1000)
                 when (count) {
-                    0 -> callback?.provideSuccess(Joke("Setup", "Punchline!"))
-                    1 -> callback?.provideError(noConnection)
-                    2 -> callback?.provideError(serviceUnavailable)
+                    0 -> callback?.provide(Joke.Base("Setup", "Punchline!"))
+                    1 -> callback?.provide(Joke.Favorite("Favorite joke", "<3"))
+                    2 -> callback?.provide(Joke.Failed(serviceUnavailable.getMessage()))
                 }
                 count++
                 if (count == 3) count = 0
             }.start()
         }
 
-        override fun init(callback: ResultCallback) {
+        override fun init(callback: JokeCallback) {
             this.callback = callback
+        }
+
+        override fun changeJokeStatus(jokeCallback: JokeCallback) {
+            TODO("Not yet implemented")
+        }
+
+        override fun chooseDataSource(favorites: Boolean) {
+            TODO("Not yet implemented")
         }
 
         override fun clear() {
@@ -81,9 +114,7 @@ interface Model {
     }
 }
 
-interface ResultCallback {
+interface JokeCallback {
 
-    fun provideSuccess(joke: Joke)
-
-    fun provideError(error: JokeError)
+    fun provide(joke: Joke)
 }
