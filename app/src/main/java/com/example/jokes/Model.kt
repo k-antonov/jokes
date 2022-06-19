@@ -1,5 +1,9 @@
 package com.example.jokes
 
+import retrofit2.Call
+import retrofit2.Response
+import java.net.UnknownHostException
+
 interface Model {
 
     fun getJoke()
@@ -18,15 +22,20 @@ interface Model {
         private val serviceUnavailable by lazy { JokeError.ServiceUnavailable(resourceManager) }
 
         override fun getJoke() {
-            service.getJoke(object : ServiceCallback {
-                override fun returnSuccess(data: String) {
-                    callback?.provideSuccess(Joke(data, ""))
+            service.getJoke().enqueue(object : retrofit2.Callback<JokeDTO> {
+                override fun onResponse(call: Call<JokeDTO>, response: Response<JokeDTO>) {
+                    if (response.isSuccessful) {
+                        callback?.provideSuccess(response.body()!!.toJoke())
+                    } else {
+                        callback?.provideError(serviceUnavailable)
+                    }
                 }
 
-                override fun returnError(errorType: ErrorType) {
-                    when (errorType) {
-                        ErrorType.NO_CONNECTION -> callback?.provideError(noConnection)
-                        ErrorType.OTHER -> callback?.provideError(serviceUnavailable)
+                override fun onFailure(call: Call<JokeDTO>, t: Throwable) {
+                    if (t is UnknownHostException) {
+                        callback?.provideError(noConnection)
+                    } else {
+                        callback?.provideError(serviceUnavailable)
                     }
                 }
             })
