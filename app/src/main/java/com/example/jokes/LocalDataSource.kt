@@ -1,10 +1,59 @@
 package com.example.jokes
 
+import io.realm.Realm
+
 interface LocalDataSource {
+
+    fun getJoke(jokeLocalCallback: JokeLocalCallback)
 
     fun addOrRemove(id: Int, jokeRemoteEntity: JokeRemoteEntity): Joke
 
-    fun getJoke(jokeLocalCallback: JokeLocalCallback)
+
+    class Base(private val realm: Realm) : LocalDataSource {
+
+        override fun getJoke(jokeLocalCallback: JokeLocalCallback) {
+            realm.let {
+                val jokes = it.where(JokeRealm::class.java).findAll()
+                if (jokes.isEmpty()) {
+                    jokeLocalCallback.fail()
+                } else {
+                    jokes.random().let { jokeRealm ->
+                        jokeLocalCallback.provide(
+                            JokeRemoteEntity(
+                                error = jokeRealm.error,
+                                category = jokeRealm.category,
+                                type = jokeRealm.type,
+                                setup = jokeRealm.setup,
+                                delivery = jokeRealm.delivery,
+                                flags = jokeRealm.flags!!.toRemote(),
+                                id = jokeRealm.id,
+                                safe = jokeRealm.safe,
+                                lang = jokeRealm.lang
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        override fun addOrRemove(id: Int, jokeRemoteEntity: JokeRemoteEntity): Joke {
+            realm.let {
+                val jokeRealm = it.where(JokeRealm::class.java).equalTo("id", id).findFirst()
+                return if (jokeRealm == null) {
+                    val newJoke = jokeRemoteEntity.toJokeRealm()
+                    it.executeTransactionAsync { transaction ->
+                        transaction.insert(newJoke)
+                    }
+                    jokeRemoteEntity.toFavoriteJoke()
+                } else {
+                    it.executeTransactionAsync {
+                        jokeRealm.deleteFromRealm()
+                    }
+                    jokeRemoteEntity.toBaseJoke()
+                }
+            }
+        }
+    }
 
     class Test : LocalDataSource {
 

@@ -9,9 +9,9 @@ abstract class Joke(private val setup: String, private val punchline: String) {
     @DrawableRes
     protected abstract fun getIconResId(): Int
 
-    fun map(callback: DataCallback) {
-        callback.provideText(getJokeUi())
-        callback.provideIconRes(getIconResId())
+    fun map(dataCallback: DataCallback) {
+        dataCallback.provideText(getJokeUi())
+        dataCallback.provideIconRes(getIconResId())
     }
 
     class Base(setup: String, punchline: String) : Joke(setup, punchline) {
