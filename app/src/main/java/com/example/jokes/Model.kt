@@ -23,35 +23,35 @@ interface Model {
         private val noCachedJokes by lazy { JokeError.NoCachedJokes(resourceManager) }
 
         private var jokeCallback: JokeCallback? = null
-        private var localJokeRemoteEntity: JokeRemoteEntity? = null
+        private var localJoke: Joke? = null
 
         private var getLocalJoke = false
 
         override fun getJoke() {
             if (getLocalJoke) {
                 localDataSource.getJoke(object : JokeLocalCallback {
-                    override fun provide(jokeRemoteEntity: JokeRemoteEntity) {
-                        localJokeRemoteEntity = jokeRemoteEntity
-                        jokeCallback?.provide(jokeRemoteEntity.toFavoriteJoke())
+                    override fun provide(joke: Joke) {
+                        localJoke = joke
+                        jokeCallback?.provide(joke.toFavoriteJoke())
                     }
 
                     override fun fail() {
-                        localJokeRemoteEntity = null
-                        jokeCallback?.provide(Joke.Failed(noCachedJokes.getMessage()))
+                        localJoke = null
+                        jokeCallback?.provide(JokeUiEntity.Failed(noCachedJokes.getMessage()))
                     }
                 })
             } else {
                 remoteDataSource.getJoke(object : JokeRemoteCallback {
-                    override fun provide(jokeRemoteEntity: JokeRemoteEntity) {
-                        localJokeRemoteEntity = jokeRemoteEntity
-                        jokeCallback?.provide(jokeRemoteEntity.toBaseJoke())
+                    override fun provide(joke: Joke) {
+                        localJoke = joke
+                        jokeCallback?.provide(joke.toBaseJoke())
                     }
 
                     override fun fail(errorType: ErrorType) {
-                        localJokeRemoteEntity = null
+                        localJoke = null
                         val failure =
                             if (errorType == ErrorType.SERVICE_UNAVAILABLE) serviceUnavailable else noConnection
-                        jokeCallback?.provide(Joke.Failed(failure.getMessage()))
+                        jokeCallback?.provide(JokeUiEntity.Failed(failure.getMessage()))
                     }
                 })
             }
@@ -62,7 +62,7 @@ interface Model {
         }
 
         override fun changeJokeStatus(jokeCallback: JokeCallback) {
-            localJokeRemoteEntity?.changeStatus(localDataSource)?.let {
+            localJoke?.changeStatus(localDataSource)?.let {
                 jokeCallback.provide(it)
             }
         }
@@ -87,9 +87,9 @@ interface Model {
             Thread {
                 Thread.sleep(1000)
                 when (count) {
-                    0 -> callback?.provide(Joke.Base("Setup", "Punchline!"))
-                    1 -> callback?.provide(Joke.Favorite("Favorite joke", "<3"))
-                    2 -> callback?.provide(Joke.Failed(serviceUnavailable.getMessage()))
+                    0 -> callback?.provide(JokeUiEntity.Base("Setup", "Punchline!"))
+                    1 -> callback?.provide(JokeUiEntity.Favorite("Favorite joke", "<3"))
+                    2 -> callback?.provide(JokeUiEntity.Failed(serviceUnavailable.getMessage()))
                 }
                 count++
                 if (count == 3) count = 0
@@ -116,5 +116,5 @@ interface Model {
 
 interface JokeCallback {
 
-    fun provide(joke: Joke)
+    fun provide(jokeUiEntity: JokeUiEntity)
 }

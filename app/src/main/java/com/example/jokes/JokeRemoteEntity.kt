@@ -36,9 +36,10 @@ data class JokeRemoteEntity(
         @SerializedName("explicit")
         private val explicit: Boolean
     ) {
-        fun toRealm() = RealmFlags(
+
+        fun toJoke() = Joke.Flags(
             nsfw = nsfw,
-            religiuos = religious,
+            religious = religious,
             political = political,
             racist = racist,
             sexist = sexist,
@@ -46,23 +47,15 @@ data class JokeRemoteEntity(
         )
     }
 
-    fun toBaseJoke() = Joke.Base(setup, delivery)
-
-    fun toFavoriteJoke() = Joke.Favorite(setup, delivery)
-
-    fun toJokeRealm(): JokeRealm {
-        return JokeRealm().also {
-            it.error = error
-            it.category = category
-            it.type = type
-            it.setup = setup
-            it.delivery = delivery
-            it.flags = flags.toRealm()
-            it.id = id
-            it.safe = safe
-            it.lang = lang
-        }
-    }
-
-    fun changeStatus(localDataSource: LocalDataSource) = localDataSource.addOrRemove(id, this)
+    fun toJoke() = Joke(
+        error = error,
+        category = category,
+        type = type,
+        setup = setup,
+        delivery = delivery,
+        flags = flags.toJoke(),
+        id = id,
+        safe = safe,
+        lang = lang
+    )
 }

@@ -6,8 +6,7 @@ interface LocalDataSource {
 
     fun getJoke(jokeLocalCallback: JokeLocalCallback)
 
-    fun addOrRemove(id: Int, jokeRemoteEntity: JokeRemoteEntity): Joke
-
+    fun addOrRemove(id: Int, joke: Joke): JokeUiEntity
 
     class Base(private val realm: Realm) : LocalDataSource {
 
@@ -19,13 +18,13 @@ interface LocalDataSource {
                 } else {
                     jokes.random().let { jokeRealm ->
                         jokeLocalCallback.provide(
-                            JokeRemoteEntity(
+                            Joke(
                                 error = jokeRealm.error,
                                 category = jokeRealm.category,
                                 type = jokeRealm.type,
                                 setup = jokeRealm.setup,
                                 delivery = jokeRealm.delivery,
-                                flags = jokeRealm.flags!!.toRemote(),
+                                flags = jokeRealm.flags!!.toJokeFlags(),
                                 id = jokeRealm.id,
                                 safe = jokeRealm.safe,
                                 lang = jokeRealm.lang
@@ -36,20 +35,20 @@ interface LocalDataSource {
             }
         }
 
-        override fun addOrRemove(id: Int, jokeRemoteEntity: JokeRemoteEntity): Joke {
+        override fun addOrRemove(id: Int, joke: Joke): JokeUiEntity {
             realm.let {
                 val jokeRealm = it.where(JokeRealm::class.java).equalTo("id", id).findFirst()
                 return if (jokeRealm == null) {
-                    val newJoke = jokeRemoteEntity.toJokeRealm()
+                    val newJoke = joke.toJokeRealm()
                     it.executeTransactionAsync { transaction ->
                         transaction.insert(newJoke)
                     }
-                    jokeRemoteEntity.toFavoriteJoke()
+                    joke.toFavoriteJoke()
                 } else {
                     it.executeTransactionAsync {
                         jokeRealm.deleteFromRealm()
                     }
-                    jokeRemoteEntity.toBaseJoke()
+                    joke.toBaseJoke()
                 }
             }
         }
@@ -57,7 +56,7 @@ interface LocalDataSource {
 
     class Test : LocalDataSource {
 
-        private val list = mutableListOf<Pair<Int, JokeRemoteEntity>>()
+        private val list = mutableListOf<Pair<Int, Joke>>()
 
         override fun getJoke(jokeLocalCallback: JokeLocalCallback) {
             if (list.isEmpty()) {
@@ -67,15 +66,15 @@ interface LocalDataSource {
             }
         }
 
-        override fun addOrRemove(id: Int, jokeRemoteEntity: JokeRemoteEntity): Joke {
+        override fun addOrRemove(id: Int, joke: Joke): JokeUiEntity {
            val found = list.find { it.first == id }
             return if (found != null) {
-                val joke = found.second.toBaseJoke()
+                val jokeUiEntity = found.second.toBaseJoke()
                 list.remove(found)
-                joke
+                jokeUiEntity
             } else {
-                list.add(Pair(id, jokeRemoteEntity))
-                jokeRemoteEntity.toFavoriteJoke()
+                list.add(Pair(id, joke))
+                joke.toFavoriteJoke()
             }
         }
     }

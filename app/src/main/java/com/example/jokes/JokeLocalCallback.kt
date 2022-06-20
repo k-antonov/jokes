@@ -2,7 +2,7 @@ package com.example.jokes
 
 interface JokeLocalCallback {
 
-    fun provide(jokeRemoteEntity: JokeRemoteEntity)
+    fun provide(joke: Joke)
 
     fun fail()
 }

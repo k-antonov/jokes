@@ -25,7 +25,8 @@ open class RealmFlags(
     var sexist: Boolean? = null,
     var explicit: Boolean? = null
 ) : RealmObject() {
-    fun toRemote() = JokeRemoteEntity.Flags(
+
+    fun toJokeFlags() = Joke.Flags(
         nsfw = nsfw!!,
         religious = religiuos!!,
         political = political!!,

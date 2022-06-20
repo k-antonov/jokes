@@ -6,28 +6,28 @@ import java.net.UnknownHostException
 
 interface RemoteDataSource {
 
-    fun getJoke(callback: JokeRemoteCallback)
+    fun getJoke(jokeRemoteCallback: JokeRemoteCallback)
 
     class Base(private val service: JokeService) : RemoteDataSource {
-        override fun getJoke(callback: JokeRemoteCallback) {
+        override fun getJoke(jokeRemoteCallback: JokeRemoteCallback) {
             service.getJoke().enqueue(object : retrofit2.Callback<JokeRemoteEntity> {
                 override fun onResponse(
                     call: Call<JokeRemoteEntity>,
                     response: Response<JokeRemoteEntity>
                 ) {
                     if (response.isSuccessful) {
-                        callback.provide(response.body()!!)
+                        jokeRemoteCallback.provide(response.body()!!.toJoke())
                     } else {
-                        callback.fail(ErrorType.SERVICE_UNAVAILABLE)
+                        jokeRemoteCallback.fail(ErrorType.SERVICE_UNAVAILABLE)
                     }
                 }
 
                 override fun onFailure(call: Call<JokeRemoteEntity>, t: Throwable) {
-                    if (t is UnknownHostException) {
-                        callback.fail(ErrorType.NO_CONNECTION)
-                    } else {
-                        callback.fail(ErrorType.SERVICE_UNAVAILABLE)
-                    }
+                    val errorType = if (t is UnknownHostException)
+                        ErrorType.NO_CONNECTION
+                    else
+                        ErrorType.SERVICE_UNAVAILABLE
+                    jokeRemoteCallback.fail(errorType)
                 }
             })
         }
@@ -35,26 +35,28 @@ interface RemoteDataSource {
 
     class Test : RemoteDataSource {
         private var count = 0
-        override fun getJoke(callback: JokeRemoteCallback) {
-            callback.provide(
-                JokeRemoteEntity(
-                error = false,
-                category = "test category",
-                type = "test type",
-                setup = "test setup $count",
-                delivery = "test punchline $count",
-                id = 0,
-                safe = true,
-                lang = "test lang",
-                flags = JokeRemoteEntity.Flags(
-                    nsfw = false,
-                    religious = false,
-                    political = false,
-                    racist = false,
-                    sexist = false,
-                    explicit = false
+
+        override fun getJoke(jokeRemoteCallback: JokeRemoteCallback) {
+            jokeRemoteCallback.provide(
+                Joke(
+                    error = false,
+                    category = "test category",
+                    type = "test type",
+                    setup = "test setup $count",
+                    delivery = "test delivery $count",
+                    id = 0,
+                    safe = false,
+                    lang = "test lang",
+                    flags = Joke.Flags(
+                        nsfw = false,
+                        religious = false,
+                        political = false,
+                        racist = false,
+                        sexist = false,
+                        explicit = false
+                    )
                 )
-            ))
+            )
             count++
         }
     }
@@ -63,7 +65,7 @@ interface RemoteDataSource {
 
 interface JokeRemoteCallback {
 
-    fun provide(jokeRemoteEntity: JokeRemoteEntity)
+    fun provide(joke: Joke)
 
     fun fail(errorType: ErrorType)
 }
