@@ -124,12 +124,12 @@ class TestModel {
 
         override suspend fun addOrRemove(id: Int, joke: Joke): JokeUiEntity {
             return if (map.containsKey(id)) {
-                val jokeUiEntity = map[id]!!.toBaseJoke()
+                val jokeUiEntity = map[id]!!.toJokeUiBase()
                 map.remove(id)
                 jokeUiEntity
             } else {
                 map[id] = joke
-                joke.toFavoriteJoke()
+                joke.toJokeUiFavorite()
             }
         }
 

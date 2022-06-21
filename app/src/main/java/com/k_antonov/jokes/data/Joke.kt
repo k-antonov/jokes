@@ -34,9 +34,9 @@ class Joke(
         )
     }
 
-    fun toBaseJoke() = JokeUiEntity.Base(setup, delivery)
+    fun toJokeUiBase() = JokeUiEntity.Base(setup, delivery)
 
-    fun toFavoriteJoke() = JokeUiEntity.Favorite(setup, delivery)
+    fun toJokeUiFavorite() = JokeUiEntity.Favorite(setup, delivery)
 
     fun toJokeRealm(): JokeRealm {
         return JokeRealm().also {

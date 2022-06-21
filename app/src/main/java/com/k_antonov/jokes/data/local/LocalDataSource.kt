@@ -45,12 +45,12 @@ interface LocalDataSource {
                         val newJoke = joke.toJokeRealm()
                         transaction.insert(newJoke)
                     }
-                    joke.toFavoriteJoke()
+                    joke.toJokeUiFavorite()
                 } else {
                     it.executeTransaction {
                         jokeRealm.deleteFromRealm()
                     }
-                    joke.toBaseJoke()
+                    joke.toJokeUiBase()
                 }
             }
         }

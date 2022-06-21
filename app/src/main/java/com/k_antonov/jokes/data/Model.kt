@@ -34,7 +34,7 @@ interface Model {
                 return@withContext when (val result = localDataSource.getJoke()) {
                     is Result.Success<Joke> -> result.data.let {
                         localJoke = it
-                        it.toFavoriteJoke()
+                        it.toJokeUiFavorite()
                     }
                     is Result.Error -> {
                         localJoke = null
@@ -46,7 +46,7 @@ interface Model {
                     is Result.Success<JokeRemoteEntity> -> {
                         result.data.toJoke().let {
                             localJoke = it
-                            it.toBaseJoke()
+                            it.toJokeUiBase()
                         }
                     }
                     is Result.Error<ErrorType> -> {
