@@ -1,4 +1,7 @@
-package com.example.jokes
+package com.k_antonov.jokes.data
+
+import com.k_antonov.jokes.R
+import com.k_antonov.jokes.utils.ResourceManager
 
 interface JokeError {
     fun getMessage(): String

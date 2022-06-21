@@ -1,4 +1,4 @@
-package com.example.jokes
+package com.k_antonov.jokes
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

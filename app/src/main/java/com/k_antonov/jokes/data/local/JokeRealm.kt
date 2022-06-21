@@ -1,5 +1,6 @@
-package com.example.jokes
+package com.k_antonov.jokes.data.local
 
+import com.k_antonov.jokes.data.Joke
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass

@@ -1,6 +1,7 @@
-package com.example.jokes
+package com.k_antonov.jokes.ui
 
 import androidx.annotation.DrawableRes
+import com.k_antonov.jokes.R
 
 abstract class JokeUiEntity(private val setup: String, private val delivery: String) {
 

@@ -1,4 +1,9 @@
-package com.example.jokes
+package com.k_antonov.jokes.data
+
+import com.k_antonov.jokes.data.local.JokeRealm
+import com.k_antonov.jokes.data.local.LocalDataSource
+import com.k_antonov.jokes.data.local.RealmFlags
+import com.k_antonov.jokes.ui.JokeUiEntity
 
 class Joke(
     private val error: Boolean,
@@ -47,5 +52,5 @@ class Joke(
         }
     }
 
-    fun changeStatus(localDataSource: LocalDataSource) = localDataSource.addOrRemove(id, this)
+    suspend fun changeStatus(localDataSource: LocalDataSource) = localDataSource.addOrRemove(id, this)
 }

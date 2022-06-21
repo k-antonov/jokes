@@ -1,5 +1,6 @@
-package com.example.jokes
+package com.k_antonov.jokes.data.remote
 
+import com.k_antonov.jokes.data.Joke
 import com.google.gson.annotations.SerializedName
 
 data class JokeRemoteEntity(

@@ -1,18 +1,20 @@
-package com.example.jokes
+package com.k_antonov.jokes.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import com.k_antonov.jokes.App
+import com.k_antonov.jokes.R
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ViewModel
+    private lateinit var jokeViewModel: JokeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = (application as App).viewModel
+        jokeViewModel = (application as App).jokeViewModel
 
         val button = findViewById<Button>(R.id.get_joke_button)
         val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
@@ -21,35 +23,35 @@ class MainActivity : AppCompatActivity() {
 
         val checkBox = findViewById<CheckBox>(R.id.checkbox)
         checkBox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.chooseFavorites(isChecked)
+            jokeViewModel.chooseFavorites(isChecked)
         }
 
         val changeButton = findViewById<ImageButton>(R.id.change_button)
         changeButton.setOnClickListener {
-            viewModel.changeJokeStatus()
+            jokeViewModel.changeJokeStatus()
         }
 
         button.setOnClickListener {
             button.isEnabled = false
             progressBar.visibility = View.VISIBLE
-            viewModel.getJoke()
+            jokeViewModel.getJoke()
         }
 
-        viewModel.init(object : DataCallback {
-            override fun provideText(text: String) = runOnUiThread {
+        jokeViewModel.init(object : DataCallback {
+            override fun provideText(text: String) {
                 button.isEnabled = true
                 progressBar.visibility = View.INVISIBLE
                 jokeTextView.text = text
             }
 
-            override fun provideIconRes(id: Int) = runOnUiThread {
+            override fun provideIconRes(id: Int) {
                 changeButton.setImageResource(id)
             }
         })
     }
 
     override fun onDestroy() {
-        viewModel.clear()
+        jokeViewModel.clear()
         super.onDestroy()
     }
 }
