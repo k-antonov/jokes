@@ -52,5 +52,5 @@ class Joke(
         }
     }
 
-    suspend fun changeStatus(localDataSource: LocalDataSource) = localDataSource.addOrRemove(id, this)
+    suspend fun changeStatus(jokeStatusChanger: JokeStatusChanger): JokeUiEntity = jokeStatusChanger.addOrRemove(id, this)
 }

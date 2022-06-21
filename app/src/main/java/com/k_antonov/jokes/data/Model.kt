@@ -62,7 +62,7 @@ interface Model {
         }
 
         override suspend fun changeJokeStatus(): JokeUiEntity? = withContext(Dispatchers.IO) {
-            localJoke?.changeStatus(localDataSource)
+            return@withContext localJoke?.changeStatus(localDataSource)
         }
 
         override fun chooseDataSource(local: Boolean) {
