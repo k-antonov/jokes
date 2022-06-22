@@ -15,7 +15,7 @@ class Joke(
     private val id: Int,
     private val safe: Boolean,
     private val lang: String
-) {
+) : JokeChanger {
     class Flags(
         private val nsfw: Boolean,
         private val religious: Boolean,
@@ -52,5 +52,5 @@ class Joke(
         }
     }
 
-    suspend fun changeStatus(jokeStatusChanger: JokeStatusChanger): JokeUiEntity = jokeStatusChanger.addOrRemove(id, this)
+    override suspend fun changeStatus(jokeStatusChanger: JokeStatusChanger): JokeUiEntity = jokeStatusChanger.addOrRemove(id, this)
 }

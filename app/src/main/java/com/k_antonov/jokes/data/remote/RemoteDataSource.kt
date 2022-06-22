@@ -1,11 +1,11 @@
 package com.k_antonov.jokes.data.remote
 
 import android.util.Log
-import com.k_antonov.jokes.data.JokeDataFetcher
+import com.k_antonov.jokes.data.DataSource
 import com.k_antonov.jokes.utils.Result
 import java.net.UnknownHostException
 
-interface RemoteDataSource : JokeDataFetcher<JokeRemoteEntity, ErrorType> {
+interface RemoteDataSource : DataSource<JokeRemoteEntity, ErrorType> {
 
     class Base(private val service: JokeService) : RemoteDataSource {
         override suspend fun getJoke(): Result<JokeRemoteEntity, ErrorType> {

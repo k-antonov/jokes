@@ -1,12 +1,12 @@
 package com.k_antonov.jokes.data.local
 
 import com.k_antonov.jokes.data.Joke
-import com.k_antonov.jokes.data.JokeDataFetcher
+import com.k_antonov.jokes.data.DataSource
 import com.k_antonov.jokes.data.JokeStatusChanger
 import com.k_antonov.jokes.ui.JokeUiEntity
 import com.k_antonov.jokes.utils.Result
 
-interface LocalDataSource : JokeDataFetcher<Joke, Unit>, JokeStatusChanger {
+interface LocalDataSource : DataSource<Joke, Unit>, JokeStatusChanger {
 
     class Base(private val realmProvider: RealmProvider) : LocalDataSource {
 
