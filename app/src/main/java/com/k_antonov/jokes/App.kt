@@ -10,6 +10,7 @@ import com.k_antonov.jokes.data.remote.JokeService
 import com.k_antonov.jokes.data.remote.RemoteDataSource
 import com.k_antonov.jokes.data.remote.RemoteResultHandler
 import com.k_antonov.jokes.ui.JokeViewModel
+import com.k_antonov.jokes.ui.LiveDataWrapper
 import com.k_antonov.jokes.utils.ResourceManager
 import io.realm.Realm
 import retrofit2.Retrofit
@@ -48,7 +49,8 @@ class App : Application() {
                     serviceUnavailable = JokeError.ServiceUnavailable(resourceManager)
                 ),
                 localJoke = localJoke
-            )
+            ),
+            LiveDataWrapper.Base()
         )
     }
 }

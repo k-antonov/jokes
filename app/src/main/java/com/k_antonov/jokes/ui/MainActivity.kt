@@ -37,21 +37,13 @@ class MainActivity : AppCompatActivity() {
             jokeViewModel.getJoke()
         }
 
-        jokeViewModel.init(object : DataCallback {
-            override fun provideText(text: String) {
-                button.isEnabled = true
-                progressBar.visibility = View.INVISIBLE
-                jokeTextView.text = text
-            }
+        jokeViewModel.observe(this) { (text, iconResId) ->
+            button.isEnabled = true
+            progressBar.visibility = View.INVISIBLE
+            jokeTextView.text = text
+            changeButton.setImageResource(iconResId)
+        }
 
-            override fun provideIconRes(id: Int) {
-                changeButton.setImageResource(id)
-            }
-        })
     }
 
-    override fun onDestroy() {
-        jokeViewModel.clear()
-        super.onDestroy()
-    }
 }

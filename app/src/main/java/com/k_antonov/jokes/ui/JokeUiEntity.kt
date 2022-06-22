@@ -10,10 +10,7 @@ abstract class JokeUiEntity(private val setup: String, private val delivery: Str
     @DrawableRes
     protected abstract fun getIconResId(): Int
 
-    fun map(dataCallback: DataCallback) {
-        dataCallback.provideText(getText())
-        dataCallback.provideIconRes(getIconResId())
-    }
+    fun getData() = Pair(getText(), getIconResId())
 
     class Base(setup: String, delivery: String) : JokeUiEntity(setup, delivery) {
         override fun getIconResId() = R.drawable.ic_unfavorite
