@@ -5,11 +5,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.k_antonov.jokes.data.Model
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class JokeViewModel(
     private val model: Model,
-    private val liveDataWrapper: LiveDataWrapper
+    private val liveDataWrapper: LiveDataWrapper,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : ViewModel() {
 
     fun getJoke() = viewModelScope.launch {
@@ -18,7 +21,7 @@ class JokeViewModel(
         )
     }
 
-    fun changeJokeStatus() = viewModelScope.launch {
+    fun changeJokeStatus() = viewModelScope.launch(dispatcher) {
         model.changeJokeStatus()?.let {
             liveDataWrapper.getData(it.getData())
         }

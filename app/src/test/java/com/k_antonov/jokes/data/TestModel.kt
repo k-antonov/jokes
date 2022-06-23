@@ -25,7 +25,7 @@ class TestModel {
         remoteDataSource = TestRemoteDataSource()
         localDataSource = TestLocalDataSource()
         resourceManager = TestResourceManager("A message from ResourceManager")
-        model = Model.Base(remoteDataSource, localDataSource, resourceManager)
+//        model = Model.Base(remoteDataSource, localDataSource, resourceManager)
     }
 
     @Test
