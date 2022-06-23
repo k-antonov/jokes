@@ -180,7 +180,7 @@ class JokeViewModelTest {
         var imageResId = -1 // 0 for Failed, not 0 for Success
         var observed = false
 
-        override fun getData(data: Pair<String, Int>) {
+        override fun setData(data: Pair<String, Int>) {
             uiText = data.first
             imageResId = data.second
         }

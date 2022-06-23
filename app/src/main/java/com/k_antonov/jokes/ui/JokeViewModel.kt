@@ -16,15 +16,11 @@ class JokeViewModel(
 ) : ViewModel() {
 
     fun getJoke() = viewModelScope.launch {
-        liveDataWrapper.getData(
-            model.getJoke().getData()
-        )
+        model.getJoke().passData(liveDataWrapper)
     }
 
     fun changeJokeStatus() = viewModelScope.launch(dispatcher) {
-        model.changeJokeStatus()?.let {
-            liveDataWrapper.getData(it.getData())
-        }
+        model.changeJokeStatus()?.passData(liveDataWrapper)
     }
 
     fun chooseFavorites(favorites: Boolean) = model.chooseDataSource(favorites)
