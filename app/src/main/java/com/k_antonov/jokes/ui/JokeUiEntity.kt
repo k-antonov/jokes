@@ -14,7 +14,7 @@ abstract class JokeUiEntity(private val setup: String, private val delivery: Str
         Pair(getText(), getIconResId())
     )
 
-    class Base(setup: String, delivery: String) : JokeUiEntity(setup, delivery) {
+    data class Base(private val setup: String, private val delivery: String) : JokeUiEntity(setup, delivery) {
         override fun getIconResId() = R.drawable.ic_unfavorite
     }
 
@@ -22,7 +22,7 @@ abstract class JokeUiEntity(private val setup: String, private val delivery: Str
         override fun getIconResId() = R.drawable.ic_favorite
     }
 
-    class Failed(private val text: String) : JokeUiEntity(text, "") {
+    data class Failed(private val text: String) : JokeUiEntity(text, "") {
         override fun getIconResId() = 0
 
         override fun getText() = text

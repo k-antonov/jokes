@@ -2,8 +2,8 @@ package com.k_antonov.jokes.data
 
 import com.k_antonov.jokes.data.local.LocalDataSource
 import com.k_antonov.jokes.data.local.LocalJoke
-import com.k_antonov.jokes.data.local.LocalResultHandler
-import com.k_antonov.jokes.data.remote.RemoteResultHandler
+import com.k_antonov.jokes.data.remote.ErrorType
+import com.k_antonov.jokes.data.remote.JokeRemoteEntity
 import com.k_antonov.jokes.ui.JokeUiEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,8 +16,8 @@ interface Model {
 
     class Base(
         private val localDataSource: LocalDataSource,
-        private val localResultHandler: LocalResultHandler,
-        private val remoteResultHandler: RemoteResultHandler,
+        private val localResultHandler: ResultHandler<Joke, Unit>,
+        private val remoteResultHandler: ResultHandler<JokeRemoteEntity, ErrorType>,
         private val localJoke: LocalJoke
     ) : Model {
 
