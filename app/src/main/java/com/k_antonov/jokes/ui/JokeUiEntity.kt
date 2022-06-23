@@ -5,7 +5,7 @@ import com.k_antonov.jokes.R
 
 abstract class JokeUiEntity(private val setup: String, private val delivery: String) {
 
-    private fun getText() = "$setup\n$delivery"
+    protected open fun getText() = "$setup\n$delivery"
 
     @DrawableRes
     protected abstract fun getIconResId(): Int
@@ -22,7 +22,9 @@ abstract class JokeUiEntity(private val setup: String, private val delivery: Str
         override fun getIconResId() = R.drawable.ic_favorite
     }
 
-    class Failed(text: String) : JokeUiEntity(text, "") {
+    class Failed(private val text: String) : JokeUiEntity(text, "") {
         override fun getIconResId() = 0
+
+        override fun getText() = text
     }
 }

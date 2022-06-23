@@ -55,7 +55,7 @@ class JokeViewModelTest {
         viewModel.chooseFavorites(false)
         viewModel.getJoke()
 
-        val expectedUiText = "remote failed\n"
+        val expectedUiText = "remote failed"
         val actualUiText = liveDataWrapper.uiText
         val actualImageResId = liveDataWrapper.imageResId
         assertEquals(expectedUiText, actualUiText)
@@ -81,7 +81,7 @@ class JokeViewModelTest {
         viewModel.chooseFavorites(favorites = true)
         viewModel.getJoke()
 
-        val expectedUiText = "local failed\n"
+        val expectedUiText = "local failed"
         val actualUiText = liveDataWrapper.uiText
         val actualImageResId = liveDataWrapper.imageResId
         assertEquals(expectedUiText, actualUiText)
