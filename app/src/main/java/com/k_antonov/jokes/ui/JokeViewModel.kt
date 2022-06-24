@@ -1,5 +1,6 @@
 package com.k_antonov.jokes.ui
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ class JokeViewModel(
 ) : ViewModel() {
 
     fun getJoke() = viewModelScope.launch {
+        liveDataWrapper.setData(UiState.Progress)
         model.getJoke().passData(liveDataWrapper)
     }
 
@@ -25,6 +27,11 @@ class JokeViewModel(
 
     fun chooseFavorites(favorites: Boolean) = model.chooseDataSource(favorites)
 
-    fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>) =
+    fun observe(owner: LifecycleOwner, observer: Observer<UiState>) =
         liveDataWrapper.observe(owner, observer)
+
+    sealed class UiState {
+        object Progress : UiState()
+        class Loaded(val text: String, @DrawableRes val iconResId: Int) : UiState()
+    }
 }

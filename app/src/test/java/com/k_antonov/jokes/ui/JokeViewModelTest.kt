@@ -43,8 +43,8 @@ class JokeViewModelTest {
         viewModel.getJoke()
 
         val expectedUiText = "remote setup\nremote delivery"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
         assertEquals(expectedUiText, actualUiText)
         assertNotEquals(0, actualImageResId)
     }
@@ -56,8 +56,8 @@ class JokeViewModelTest {
         viewModel.getJoke()
 
         val expectedUiText = "remote failed"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
         assertEquals(expectedUiText, actualUiText)
         assertEquals(0, actualImageResId)
     }
@@ -69,8 +69,8 @@ class JokeViewModelTest {
         viewModel.getJoke()
 
         val expectedUiText = "local setup\nlocal delivery"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
         assertEquals(expectedUiText, actualUiText)
         assertNotEquals(0, actualImageResId)
     }
@@ -82,8 +82,8 @@ class JokeViewModelTest {
         viewModel.getJoke()
 
         val expectedUiText = "local failed"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
         assertEquals(expectedUiText, actualUiText)
         assertEquals(0, actualImageResId)
     }
@@ -94,8 +94,8 @@ class JokeViewModelTest {
         viewModel.changeJokeStatus()
 
         val expectedUiText = "local favorite setup\nlocal favorite delivery"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
 
         assertEquals(expectedUiText, actualUiText)
         assertNotEquals(0, actualImageResId)
@@ -107,8 +107,8 @@ class JokeViewModelTest {
         viewModel.changeJokeStatus()
 
         val expectedUiText = "local setup\nlocal delivery"
-        val actualUiText = liveDataWrapper.uiText
-        val actualImageResId = liveDataWrapper.imageResId
+        val actualUiText = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).text
+        val actualImageResId = (liveDataWrapper.uiState as JokeViewModel.UiState.Loaded).iconResId
 
         assertEquals(expectedUiText, actualUiText)
         assertNotEquals(0, actualImageResId)
@@ -117,7 +117,7 @@ class JokeViewModelTest {
     @Test
     fun observe() = runBlocking {
         val owner = LifecycleOwner { TODO("Not yet implemented") }
-        val observer = Observer<Pair<String, Int>> {}
+        val observer = Observer<JokeViewModel.UiState> {}
         viewModel.observe(owner, observer)
 
         assertEquals(true, liveDataWrapper.observed)
@@ -176,16 +176,15 @@ class JokeViewModelTest {
 
     private inner class TestLiveDataWrapper : LiveDataWrapper {
 
-        var uiText = ""
-        var imageResId = -1 // 0 for Failed, not 0 for Success
+        var uiState: JokeViewModel.UiState = JokeViewModel.UiState.Loaded(text = "", iconResId = -1)
+
         var observed = false
 
-        override fun setData(data: Pair<String, Int>) {
-            uiText = data.first
-            imageResId = data.second
+        override fun setData(uiState: JokeViewModel.UiState) {
+            this.uiState = uiState
         }
 
-        override fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>) {
+        override fun observe(owner: LifecycleOwner, observer: Observer<JokeViewModel.UiState>) {
             observed = true
         }
     }

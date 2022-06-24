@@ -32,18 +32,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         button.setOnClickListener {
-            button.isEnabled = false
-            progressBar.visibility = View.VISIBLE
             jokeViewModel.getJoke()
         }
 
-        jokeViewModel.observe(this) { (text, iconResId) ->
-            button.isEnabled = true
-            progressBar.visibility = View.INVISIBLE
-            jokeTextView.text = text
-            changeButton.setImageResource(iconResId)
+        jokeViewModel.observe(this) { uiState ->
+            when (uiState) {
+                is JokeViewModel.UiState.Progress -> {
+                    button.isEnabled = false
+                    progressBar.visibility = View.VISIBLE
+                }
+                is JokeViewModel.UiState.Loaded -> {
+                    button.isEnabled = true
+                    progressBar.visibility = View.INVISIBLE
+                    jokeTextView.text = uiState.text
+                    changeButton.setImageResource(uiState.iconResId)
+                }
+            }
         }
-
     }
 
 }

@@ -11,10 +11,11 @@ abstract class JokeUiEntity(private val setup: String, private val delivery: Str
     protected abstract fun getIconResId(): Int
 
     fun passData(liveDataWrapper: LiveDataWrapper) = liveDataWrapper.setData(
-        Pair(getText(), getIconResId())
+        JokeViewModel.UiState.Loaded(getText(), getIconResId())
     )
 
-    data class Base(private val setup: String, private val delivery: String) : JokeUiEntity(setup, delivery) {
+    data class Base(private val setup: String, private val delivery: String) :
+        JokeUiEntity(setup, delivery) {
         override fun getIconResId() = R.drawable.ic_unfavorite
     }
 

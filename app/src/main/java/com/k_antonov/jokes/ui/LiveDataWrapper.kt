@@ -6,19 +6,19 @@ import androidx.lifecycle.Observer
 
 interface LiveDataWrapper {
 
-    fun setData(data: Pair<String, Int>)
+    fun setData(uiState: JokeViewModel.UiState)
 
-    fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>)
+    fun observe(owner: LifecycleOwner, observer: Observer<JokeViewModel.UiState>)
 
     class Base : LiveDataWrapper {
 
-        private val liveData = MutableLiveData<Pair<String, Int>>()
+        private val liveData = MutableLiveData<JokeViewModel.UiState>()
 
-        override fun setData(data: Pair<String, Int>) {
-            liveData.value = data
+        override fun setData(uiState: JokeViewModel.UiState) {
+            liveData.value = uiState
         }
 
-        override fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>) {
+        override fun observe(owner: LifecycleOwner, observer: Observer<JokeViewModel.UiState>) {
             liveData.observe(owner, observer)
         }
     }
